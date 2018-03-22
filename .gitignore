@@ -1,0 +1,8 @@
+/.idea
+/build
+
+.DS_Store
+/javabeat
+/javabeat.test
+/vendor
+*.pyc

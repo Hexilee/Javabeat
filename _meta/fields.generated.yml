@@ -1,0 +1,9 @@
+- key: javabeat
+  title: javabeat
+  description:
+  fields:
+    - name: threads
+      type: long
+      required: true
+      description: >
+        PLEASE UPDATE DOCUMENTATION

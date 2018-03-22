@@ -1,0 +1,5 @@
+= Javabeat Docs
+
+Welcome to the Javabeat documentation.
+
+
