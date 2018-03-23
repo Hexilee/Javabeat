@@ -9,13 +9,16 @@ import (
 
 type (
 	OSProcessInfo struct {
-		Cmdline     string                   `json:"cmdline"`
-		Connections []net.ConnectionStat     `json:"connections"`
-		Threads     map[int32]*cpu.TimesStat `json:"threads"`
-		IOCounters  *pro.IOCountersStat      `json:"io_counters"`
-		CPUPercent  float64                  `json:"cpu_percent"`
-		CreateTime  int64                    `json:"create_time"`
-		NumThreads  int32                    `json:"num_threads"`
+		Cmdline       string                   `json:"cmdline"`
+		Connections   []net.ConnectionStat     `json:"connections"`
+		NetIOCounters []net.IOCountersStat     `json:"net_io_counters"`
+		Threads       map[int32]*cpu.TimesStat `json:"threads"`
+		IOCounters    *pro.IOCountersStat      `json:"io_counters"`
+		CPUPercent    float64                  `json:"cpu_percent"`
+		CreateTime    int64                    `json:"create_time"`
+		MemoryInfo    *pro.MemoryInfoStat      `json:"memory_info"`
+		MemoryPercent float32                  `json:"memory_percent"`
+		NumThreads    int32                    `json:"num_threads"`
 	}
 )
 
@@ -35,13 +38,19 @@ func GetOSProcessInfo(pid int32) (string, error) {
 	if IsOSError(err) {
 		return "Connections", err
 	}
-	// Not implemented
+
+	// Not implemented on darwin, windows
+	processInfo.NetIOCounters, err = process.NetIOCounters(true)
+	if IsOSError(err) {
+		return "NetIOCounters", err
+	}
+	// Not implemented on darwin, windows
 	processInfo.Threads, err = process.Threads()
 	if IsOSError(err) {
 		return "Threads", err
 	}
 
-	// Not implemented
+	// Not implemented on darwin, windows
 	processInfo.IOCounters, err = process.IOCounters()
 	if IsOSError(err) {
 		return "IOCounters", err
@@ -55,6 +64,16 @@ func GetOSProcessInfo(pid int32) (string, error) {
 	processInfo.CreateTime, err = process.CreateTime()
 	if IsOSError(err) {
 		return "CreateTime", err
+	}
+
+	processInfo.MemoryInfo, err = process.MemoryInfo()
+	if IsOSError(err) {
+		return "MemoryInfo", err
+	}
+
+	processInfo.MemoryPercent, err = process.MemoryPercent()
+	if IsOSError(err) {
+		return "MemoryPercent", err
 	}
 
 	processInfo.NumThreads, err = process.NumThreads()
