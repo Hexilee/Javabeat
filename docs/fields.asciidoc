@@ -270,7 +270,7 @@ None
 
 
 [float]
-=== `threads`
+=== `counter`
 
 type: long
 

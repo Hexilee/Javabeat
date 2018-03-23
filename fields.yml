@@ -204,7 +204,7 @@
   title: javabeat
   description:
   fields:
-    - name: threads
+    - name: counter
       type: long
       required: true
       description: >

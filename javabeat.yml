@@ -72,6 +72,7 @@ output.elasticsearch:
   #protocol: "https"
   #username: "elastic"
   #password: "changeme"
+  #index: "javabeat-%{[type]}-%{+yyyy.MM}-v1"
 
 #----------------------------- Logstash output --------------------------------
 #output.logstash:
@@ -113,3 +114,6 @@ output.elasticsearch:
 # have the Elasticsearch output configured, you can simply uncomment the
 # following line.
 #xpack.monitoring.elasticsearch:
+
+setup.template.name: "javabeat"
+setup.template.pattern: "javabeat-*"
