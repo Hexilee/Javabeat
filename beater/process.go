@@ -4,6 +4,9 @@ import (
 	"path/filepath"
 	"os"
 	"github.com/elastic/beats/libbeat/logp"
+	"github.com/elastic/beats/libbeat/beat"
+	"github.com/elastic/beats/libbeat/common"
+	"time"
 )
 
 const (
@@ -12,13 +15,38 @@ const (
 
 type (
 	Process struct {
-		Pid      string
+		Pid      int32
 		Username string
+		OSInfo   *OSProcessInfo
 	}
 )
 
-func NewProcess(Pid, Username string) *Process {
-	return &Process{Pid, Username}
+func NewProcess(Pid int32, Username string) *Process {
+	return &Process{Pid: Pid, Username: Username}
+}
+
+func (process *Process) InitOSInfo() *Process {
+	osInfo, err := GetOSProcessInfo(process.Pid)
+	if err == nil {
+		process.OSInfo = osInfo
+	}
+	return process
+}
+
+func (process *Process) GenEvent(b *beat.Beat) beat.Event {
+	return beat.Event{
+		Timestamp: time.Now(),
+		Fields: common.MapStr{
+			"type": b.Info.Name,
+			"pid":  process.Pid,
+			"username": process.Username,
+			"os_info": process.InitOSInfo().OSInfo,
+		},
+	}
+}
+
+func (process *Process) Push(bt *Javabeat, b *beat.Beat) {
+	bt.client.Publish(process.GenEvent(b))
 }
 
 func GetProcesses() ([]*Process, error) {
@@ -39,7 +67,9 @@ func GetProcesses() ([]*Process, error) {
 			user, _ := GetUserFromHSperfDir(dir.Name())
 			err = filepath.Walk(dirName, func(path string, info os.FileInfo, err error) error {
 				if err == nil && !info.IsDir() {
-					Processes = append(Processes, NewProcess(info.Name(), user))
+					if pid, err := AToI32(info.Name()); err == nil {
+						Processes = append(Processes, NewProcess(pid, user))
+					}
 				}
 				return nil
 			})
@@ -49,6 +79,14 @@ func GetProcesses() ([]*Process, error) {
 	return Processes, err
 }
 
-func PushJVMEvent() {
+func PushEvents(bt *Javabeat, b *beat.Beat) {
+	processes, err := GetProcesses()
+	if err != nil {
+		logp.Warn("Get Processes err: %s", err.Error())
+		return
+	}
 
+	for _, process := range processes {
+		go process.Push(bt, b)
+	}
 }

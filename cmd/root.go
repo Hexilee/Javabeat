@@ -8,7 +8,7 @@ import (
 
 // Name of this beat
 const Name = "javabeat"
-const Version = "0.1.0-beta"
+const Version = "0.1.0"
 
 // RootCmd to handle beats cli
 var RootCmd = cmd.GenRootCmd(Name, Version, beater.New)

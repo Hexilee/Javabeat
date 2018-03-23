@@ -9,7 +9,7 @@ func TestGetProcesses(t *testing.T) {
 	processes, err := GetProcesses()
 	assert.Nil(t, err)
 	for _, process := range processes {
-		t.Logf("PID: %s", process.Pid)
+		t.Logf("PID: %d", process.Pid)
 		t.Logf("User: %s", process.Username)
 	}
 }

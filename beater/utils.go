@@ -2,6 +2,7 @@ package beater
 
 import (
 	"strings"
+	"strconv"
 )
 
 const (
@@ -22,4 +23,9 @@ func IsOSError(err error) bool {
 		return true
 	}
 	return false
+}
+
+func AToI32(pidStr string) (int32, error) {
+	pid, err := strconv.Atoi(pidStr)
+	return int32(pid), err
 }
