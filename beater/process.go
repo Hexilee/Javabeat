@@ -48,3 +48,7 @@ func GetProcesses() ([]*Process, error) {
 
 	return Processes, err
 }
+
+func PushJVMEvent() {
+
+}
