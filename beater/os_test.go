@@ -8,6 +8,6 @@ import (
 func TestGetOSProcessInfo(t *testing.T) {
 	result, err := GetOSProcessInfo(3422)
 	assert.Nil(t, err)
-	t.Logf(result)
+	t.Logf("%#v", result)
 }
 
