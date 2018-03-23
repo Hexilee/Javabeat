@@ -3,15 +3,17 @@
 package beater
 
 import (
-	"github.com/shirou/gopsutil/cpu"
 	pro "github.com/shirou/gopsutil/process"
 	"encoding/json"
 )
 
 type (
 	OSProcessInfo struct {
-		NumThreads int32                    `json:"num_threads"`
+		Cmdline    string                   `json:"cmdline"`
 		Threads    map[int32]*cpu.TimesStat `json:"threads"`
+		CPUPercent float64                  `json:"cpu_percent"`
+		CreateTime int64                    `json:"create_time"`
+		NumThreads int32                    `json:"num_threads"`
 	}
 )
 
@@ -21,14 +23,30 @@ func GetOSProcessInfo(pid int32) (string, error) {
 		return "NewProcess", err
 	}
 	processInfo := new(OSProcessInfo)
-	processInfo.NumThreads, err = process.NumThreads()
+
+	processInfo.Cmdline, err = process.Cmdline()
 	if err != nil {
-		return "NumThreads", err
+		return "Cmdline", err
 	}
 
 	processInfo.Threads, err = process.Threads()
 	if err != nil {
 		return "Threads", err
+	}
+
+	processInfo.CPUPercent, err = process.CPUPercent()
+	if err != nil {
+		return "CPUPercent", err
+	}
+
+	processInfo.CreateTime, err = process.CreateTime()
+	if err != nil {
+		return "CreateTime", err
+	}
+
+	processInfo.NumThreads, err = process.NumThreads()
+	if err != nil {
+		return "NumThreads", err
 	}
 
 	result, err := json.Marshal(processInfo)
