@@ -47,7 +47,7 @@ func (bt *Javabeat) Run(b *beat.Beat) error {
 			return nil
 		case <-ticker.C:
 		}
-		go PushEvents(bt, b)
+		go PublishEvents(bt, b)
 	}
 }
 

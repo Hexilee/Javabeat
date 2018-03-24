@@ -45,7 +45,7 @@ func (process *Process) GenEvent(b *beat.Beat) beat.Event {
 	}
 }
 
-func (process *Process) Push(bt *Javabeat, b *beat.Beat) {
+func (process *Process) Publish(bt *Javabeat, b *beat.Beat) {
 	bt.client.Publish(process.GenEvent(b))
 }
 
@@ -79,7 +79,7 @@ func GetProcesses() ([]*Process, error) {
 	return Processes, err
 }
 
-func PushEvents(bt *Javabeat, b *beat.Beat) {
+func PublishEvents(bt *Javabeat, b *beat.Beat) {
 	processes, err := GetProcesses()
 	if err != nil {
 		logp.Warn("Get Processes err: %s", err.Error())
@@ -87,6 +87,6 @@ func PushEvents(bt *Javabeat, b *beat.Beat) {
 	}
 
 	for _, process := range processes {
-		go process.Push(bt, b)
+		go process.Publish(bt, b)
 	}
 }
